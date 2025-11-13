@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MyWallet Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <h1 class="text-center mb-5">💰 MyWallet Dashboard</h1>
+    <h2>Total Balance: <span th:text="${totalBalance}">0</span></h2>
+
+
+    <div class="row">
+        <!-- Loop through accounts -->
+        <div class="col-md-4 mb-4" th:each="acc : ${accounts}">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${acc.name}"></h5>
+                    <p class="h4 text-success" th:text="${acc.balance} + ' EGP'"></p>
+
+                    <!-- Form: Add Funds -->
+                    <form th:action="@{/add}" method="post" class="mb-2">
+                        <input type="hidden" name="walletName" th:value="${acc.name}"/>
+                        <input type="number" step="0.01" name="amount" class="form-control mb-1" placeholder="المبلغ" required/>
+                        <input type="text" name="description" class="form-control mb-1" placeholder="ملاحظة"/>
+                        <button class="btn btn-success w-100">إضافة رصيد</button>
+                    </form>
+
+                    <!-- Form: Spend Funds -->
+                    <form th:action="@{/spend}" method="post">
+                        <input type="hidden" name="walletName" th:value="${acc.name}"/>
+                        <input type="number" step="0.01" name="amount" class="form-control mb-1" placeholder="المبلغ" required/>
+                        <input type="text" name="description" class="form-control mb-1" placeholder="ملاحظة"/>
+                        <button class="btn btn-danger w-100">صرف رصيد</button>
+                    </form>
+
+                    <a th:href="@{'/transactions/' + ${acc.name}}" class="btn btn-primary mt-2 w-100">سجل المعاملات</a>
+
+                    <!-- آخر 5 معاملات -->
+                    <h6 class="mt-3">آخر المعاملات:</h6>
+                    <ul class="list-group" th:if="${lastTxs[acc.name]} != null">
+                        <li class="list-group-item d-flex justify-content-between"
+                            th:each="tx : ${lastTxs[acc.name]}">
+                            <span th:text="${tx.type}"></span>
+                            <span th:text="${tx.amount} + ' EGP'"></span>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
